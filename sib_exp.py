@@ -6,7 +6,7 @@ from flask_marshmallow import Marshmallow
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://akash:Bosch@2016@localhost/dailyexp'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://akash:Myoxyblue35!@localhost/dailyexp'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 
 db=SQLAlchemy(app)
@@ -70,8 +70,6 @@ def getall_exp():
     result = all_details.dump(alldetails)
     return jsonify(result.data)
     
-
-
 #this is main program
 if __name__ == '__main__':
     app.debug = True
