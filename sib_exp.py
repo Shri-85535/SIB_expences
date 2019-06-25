@@ -17,27 +17,16 @@ class DailyExpences(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     Date = db.Column(db.Date, nullable=True)
     Ration =db.Column(db.Integer) #, NCHAR(8425)
-    Vegetables =db.Column(db.String(50))
-    Water =db.Column(db.String(50))
-    Advance =db.Column(db.String(50))
-    Deposite =db.Column(db.String(50))
-    Gas =db.Column(db.String(50))
-    Misc =db.Column(db.String(50))
+    Vegetables =db.Column(db.Integer)
     
-    def __init__(self, Date, Ration, Vegetables, Water, Advance, Deposite, Gas, Misc):
+    def __init__(self, Date, Ration, Vegetables):
         self.Date = Date
         self.Ration = Ration
-        self.Vegetables = Vegetables
-        self.Water = Water
-        self.Advance = Advance
-        self.Deposite = Deposite
-        self.Gas = Gas
-        self.Misc = Misc
 
 class details_schema(ma.Schema):
     class Meta:
         #fields to expose
-        fields = ('Date','Ration','Vegetables','Water','Advance','Deposite','Gas','Misc')
+        fields = ('Date','Ration','Vegetables')
 
 db.create_all()
 details = details_schema()
@@ -49,13 +38,8 @@ def add_exp():
     Date = request.json['Date']
     Ration = request.json['Ration']
     Vegetables =request.json['Vegetables']
-    Water = request.json['Water']
-    Advance = request.json['Advance']
-    Deposite = request.json['Deposite']
-    Gas = request.json['Gas']
-    Misc = request.json['Misc']
     
-    new_detail = DailyExpences(Date,Ration,Vegetables,Water,Advance,Deposite,Gas,Misc)
+    new_detail = DailyExpences(Date,Ration,Vegetables)
     db.session.add(new_detail)
     db.session.commit()
     
