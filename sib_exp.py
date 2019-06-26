@@ -3,7 +3,8 @@ pymysql.install_as_MySQLdb()
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-import os
+from flask_httpauth import HTTPBasicAuth
+from passlib.apps import custom_app_context as pwd_context
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://akash:Myoxyblue35!@localhost/dailyexp'
@@ -11,6 +12,20 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 
 db=SQLAlchemy(app)
 ma=Marshmallow(app)
+
+class Users(db.Model):
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), index=True)
+    password_hash = db.Column(db.String(150))
+    
+    def hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
+        
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)
+    
+   
 
 class DailyExpences(db.Model):
     __tablename__ = 'DailyExpences'
@@ -31,6 +46,26 @@ class details_schema(ma.Schema):
 db.create_all()
 details = details_schema()
 all_details = details_schema(many=True)
+
+#endpoint to create new user
+@app.route('/users', methods=['POST'])
+def new_user():
+    username = request.json['username']
+    password = request.json['password']
+    if username is None or password is None:
+        print("missing arguments!")
+        abort(400)
+        
+    user = db.session.query(Users).filter_by(username = username).first()
+    if user is not None:
+        print ("Existing User")
+        return jsonify({'message':'user already exists'}), 200
+    
+    user = Users(username = username)
+    user.hash_password(password)
+    db.session.add(user)
+    db.session.commit()
+    return jsonify ({"username":user.username}), 201
 
 #endpoint to create new detail
 @app.route('/sibexp', methods=['POST'])
@@ -58,3 +93,4 @@ def getall_exp():
 if __name__ == '__main__':
     app.debug = True
     app.run(host = '0.0.0.0',port=8080)
+iub
