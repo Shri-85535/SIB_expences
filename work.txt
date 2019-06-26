@@ -1,0 +1,14 @@
+/signup
+-read username n pass, create entry in db
+
+/login
+-read username n pass, retur approp result
+
+/epense
+-POST create,user should be valid, userid should be a part of d-exp
+--create db entry in d-exp
+--user must exist
+-GET(id)
+--return perticular d-exp, user must exist and d-exp exist
+-GET
+--return all d-exp, user must exist, all d-exp of the perticular user
