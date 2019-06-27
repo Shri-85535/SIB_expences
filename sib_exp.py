@@ -1,11 +1,12 @@
 import pymysql
 pymysql.install_as_MySQLdb()
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify, request, url_for, abort, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_httpauth import HTTPBasicAuth
 from passlib.apps import custom_app_context as pwd_context
 
+auth = HTTPBasicAuth() 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://akash:Myoxyblue35!@localhost/dailyexp'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
@@ -24,19 +25,18 @@ class Users(db.Model):
         
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
-    
-   
 
 class DailyExpences(db.Model):
     __tablename__ = 'DailyExpences'
     id = db.Column(db.Integer, primary_key=True)
-    Date = db.Column(db.Date, nullable=True)
-    Ration =db.Column(db.Integer) #, NCHAR(8425)
-    Vegetables =db.Column(db.Integer)
+    Date = db.Column(db.Date, nullable=False)
+    Ration =db.Column(db.Integer, nullable=False) #, NCHAR(8425)
+    Vegetables =db.Column(db.Integer, nullable=False)
     
     def __init__(self, Date, Ration, Vegetables):
         self.Date = Date
         self.Ration = Ration
+        self.Vegetables = Vegetables
 
 class details_schema(ma.Schema):
     class Meta:
@@ -46,6 +46,20 @@ class details_schema(ma.Schema):
 db.create_all()
 details = details_schema()
 all_details = details_schema(many=True)
+
+@auth.verify_password
+def verify_password(username, password):
+    print ("Looking for user %s" % username)
+    user = db.session.query(Users).filter_by(username = username).first()
+    if not user: 
+        print ("User not found")
+        return False
+    elif not user.verify_password(password):
+        print ("Unable to verify password")
+        return False
+    else:
+        g.user = user
+        return True
 
 #endpoint to create new user
 @app.route('/users', methods=['POST'])
@@ -82,8 +96,9 @@ def add_exp():
     return details.jsonify(dexp)
 
 #endpoint to show all details
-@app.route('/sibexp', methods=['GET'])
 @app.route('/', methods=['GET'])
+@app.route('/sibexp', methods=['GET'])
+@auth.login_required
 def getall_exp():
     alldetails = DailyExpences.query.all()
     result = all_details.dump(alldetails)
@@ -93,4 +108,3 @@ def getall_exp():
 if __name__ == '__main__':
     app.debug = True
     app.run(host = '0.0.0.0',port=8080)
-iub
