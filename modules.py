@@ -3,6 +3,7 @@ pymysql.install_as_MySQLdb()
 from flask import Flask, jsonify, request, url_for, abort, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from passlib.apps import custom_app_context as pwd_context
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://akash:Myoxyblue35!@localhost/dailyexp'

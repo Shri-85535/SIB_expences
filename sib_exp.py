@@ -1,6 +1,7 @@
-from modules import app, Users, DailyExpences, details_schema
+from modules import *
+from flask import Flask, jsonify, request, url_for, abort, g
 from flask_httpauth import HTTPBasicAuth
-from passlib.apps import custom_app_context as pwd_context
+
 auth = HTTPBasicAuth() 
 
 @auth.verify_password
