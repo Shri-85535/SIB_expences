@@ -1,6 +1,9 @@
-from modules import *
-from flask import Flask, jsonify, request, url_for, abort, g
-from flask_httpauth import HTTPBasicAuth
+from modules import * #Importing classes from modules.py
+from flask import Flask, jsonify, request, url_for, abort, g 
+from flask_httpauth import HTTPBasicAuth  #Flask-HTTPAuth is a simple extension that simplifies the use of HTTP authentication with Flask routes.
+#This class handles HTTP Basic authentication for Flask routes. 
+
+
 
 auth = HTTPBasicAuth() 
 
@@ -52,6 +55,13 @@ def add_exp():
     dexp = DailyExpences.query.get(new_detail.id)
     return details.jsonify(dexp)
 
+#On this part we define endpoint to create new detail.
+#First we set the route to “/sibexp” and set HTTP methods to POST.
+#After set the route and methods we define function that will executed if we access this endpoint.
+#On this function first we get Date, Ration and Vegetables from request data.
+#After that we create new_detail using data from request data.
+#Last we add new_detail to data base and show new_detail in JSON form as response.
+
 #endpoint to show all details
 @app.route('/', methods=['GET'])
 @app.route('/sibexp', methods=['GET'])
@@ -60,8 +70,14 @@ def getall_exp():
     alldetails = DailyExpences.query.all()
     result = all_details.dump(alldetails)
     return jsonify(result.data)
+
+#On this part we define endpoint to get list of all details and show the result as JSON response.
+
     
 #this is main program
 if __name__ == '__main__':
     app.debug = True
     app.run(host = '0.0.0.0',port=8080)
+
+
+#***https://medium.com/python-pandemonium/build-simple-restful-api-with-python-and-flask-part-2-724ebf04d12***
