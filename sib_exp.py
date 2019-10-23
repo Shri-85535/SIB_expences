@@ -79,5 +79,4 @@ if __name__ == '__main__':
     app.debug = True
     app.run(host = '0.0.0.0',port=8080)
 
-
 #***https://medium.com/python-pandemonium/build-simple-restful-api-with-python-and-flask-part-2-724ebf04d12***
